@@ -30,3 +30,22 @@ const createAddQuoteForm = ()=>{
   </div>`;
   quote_display.appendChild(div)
 }
+function addQuote(){
+    const userQuoteText = newQuoteText.value.trim();
+    const userQuoteCat = newQuoteCategory.value.trim();
+    if(userQuoteCat==="" || userQuoteText===""){
+        alert("please enter both quote and category")
+        return
+    }
+
+    let myObj ={
+        quote: userQuoteText,
+        category:userQuoteCat
+    }
+    randomQuotes.push(myObj)
+    newQuoteText.value="";
+    newQuoteCategory.value="";
+     
+  }
+
+ 
