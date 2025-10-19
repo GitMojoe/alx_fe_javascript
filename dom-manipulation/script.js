@@ -220,15 +220,11 @@ async function fetchQuotesFromServer() {
 async function startServerSync() {
   console.log("Starting periodic server sync...");
 
+  // Run sync once immediately
+  await syncQuotes();
+
   // Sync every 30 seconds (for simulation)
-  setInterval(async () => {
-    const serverQuotes = await fetchQuotesFromServer();
-
-    // ✅ Send any new local quotes to server before merging
-    await sendQuotesToServer();
-
-    syncWithLocal(serverQuotes);
-  }, 30000);
+  setInterval(syncQuotes, 30000);
 }
 
 // ---------------- STEP 3: CONFLICT RESOLUTION ----------------
@@ -317,4 +313,20 @@ async function sendQuotesToServer() {
   } catch (error) {
     console.error("Failed to send quotes to server:", error);
   }
+}
+
+// ---------------- STEP 5: MAIN SYNC FUNCTION ----------------
+async function syncQuotes() {
+  console.log("Performing full sync...");
+
+  // Step 1: Send local quotes to server
+  await sendQuotesToServer();
+
+  // Step 2: Fetch updated quotes from server
+  const serverQuotes = await fetchQuotesFromServer();
+
+  // Step 3: Merge and resolve conflicts
+  syncWithLocal(serverQuotes);
+
+  console.log("Sync completed successfully.");
 }
