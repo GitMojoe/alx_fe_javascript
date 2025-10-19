@@ -196,3 +196,64 @@ function restoreLastCategory() {
     filterQuotes();
   }
 }
+
+// ---------------- STEP 1 & 2: SIMULATED SERVER SYNC ----------------
+async function fetchQuotesFromServer() {
+  try {
+    // Using JSONPlaceholder as mock server
+    const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+    const data = await res.json();
+
+    // Convert server posts to mock quotes
+    const serverQuotes = data.slice(0, 5).map((item) => ({
+      quote: item.title,
+      category: "server",
+    }));
+
+    return serverQuotes;
+  } catch (err) {
+    console.error("Failed to fetch server data:", err);
+    return [];
+  }
+}
+
+async function startServerSync() {
+  console.log("Starting periodic server sync...");
+
+  // Sync every 30 seconds (for simulation)
+  setInterval(async () => {
+    const serverQuotes = await fetchQuotesFromServer();
+    syncWithLocal(serverQuotes);
+  }, 30000);
+}
+
+// ---------------- STEP 3: CONFLICT RESOLUTION ----------------
+function syncWithLocal(serverQuotes) {
+  let localQuotes = [];
+
+  // Gather all local quotes
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith("quote_")) {
+      const quotesArray = JSON.parse(localStorage.getItem(key)) || [];
+      localQuotes = localQuotes.concat(quotesArray);
+    }
+  }
+
+  // Conflict resolution: Server wins if duplicates exist
+  const mergedQuotes = [
+    ...serverQuotes,
+    ...localQuotes.filter(
+      (lq) => !serverQuotes.some((sq) => sq.quote === lq.quote)
+    ),
+  ];
+
+  // Replace localStorage with merged data
+  localStorage.clear();
+  const key = `quote_${Date.now()}`;
+  localStorage.setItem(key, JSON.stringify(mergedQuotes));
+
+  alert("Data synced with server. Conflicts resolved (server took priority).");
+  populateCategories();
+  filterQuotes();
+}
