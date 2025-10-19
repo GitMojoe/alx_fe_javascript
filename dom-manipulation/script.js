@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded',showRandomQuote)
+
 const quote_display = document.getElementById("quoteDisplay");
 const new_quote = document.getElementById('newQuote');
 
@@ -43,9 +45,10 @@ function addQuote(){
         category:userQuoteCat
     }
     randomQuotes.push(myObj)
+    const key = `quote_ ${Date.now()}`;
+    localStorage.setItem(key, JSON.stringify(randomQuotes))
     newQuoteText.value="";
-    newQuoteCategory.value="";
-     
+    newQuoteCategory.value=""; 
   }
 
  
