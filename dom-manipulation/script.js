@@ -18,6 +18,15 @@ const randomIndex = Math.floor(Math.random() * randomQuotes.length);
     const text = document.createElement('p');
     text.textContent = `${selectedQuote.quote} — ${selectedQuote.category}`;
     quote_display.appendChild(text);
-
+    createAddQuoteForm();
 }
 
+const createAddQuoteForm = ()=>{
+    const div = document.createElement('div')
+    div.innerHTML=`<div>
+    <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+    <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+    <button onclick="addQuote()">Add Quote</button>
+  </div>`;
+  quote_display.appendChild(div)
+}
