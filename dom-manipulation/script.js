@@ -12,15 +12,28 @@ new_quote.addEventListener('click',showRandomQuote);
 
 
 function showRandomQuote(){
-const randomIndex = Math.floor(Math.random() * randomQuotes.length);
-  const selectedQuote = randomQuotes[randomIndex];
+    for(let i=0; i<localStorage.length; i++){
+        const key = localStorage.key(i)
+        if(key.startsWith("quote_")){
+            const storedQuotes = JSON.parse(localStorage.getItem(key)||[]);
 
-    quote_display.innerHTML="";
+        const randomIndex = Math.floor(Math.random() * storedQuotes.length);
+        const selectedQuote = randomQuotes[randomIndex];
+
+        quote_display.innerHTML="";
+        
+        const text = document.createElement('p');
+        text.textContent = `${selectedQuote.quote} — ${selectedQuote.category}`;
+        quote_display.appendChild(text);
+        }
+        
+    }
+
+   
     
-    const text = document.createElement('p');
-    text.textContent = `${selectedQuote.quote} — ${selectedQuote.category}`;
-    quote_display.appendChild(text);
+
     createAddQuoteForm();
+
 }
 
 const createAddQuoteForm = ()=>{
