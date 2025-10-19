@@ -12,8 +12,6 @@ new_quote.addEventListener('click',showRandomQuote);
     
 
 
-
-
 function showRandomQuote(){
     for(let i=0; i<localStorage.length; i++){
         const key = localStorage.key(i)
@@ -42,11 +40,10 @@ const createAddQuoteForm = ()=>{
     <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
     <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
     <button onclick="addQuote()">Add Quote</button>
-    <button id="exportButton">Export quotes</button>
   </div>`;
   quote_display.appendChild(div)
-    const exportBtn = document.getElementById('exportButton');
-    exportBtn.addEventListener('click', exportQuotesToJSON);
+    const exportBtn = document.getElementById('exportQuote');
+exportBtn.addEventListener('click', exportQuotesToJSON);
 };
 
 function addQuote(){
