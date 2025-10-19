@@ -1,14 +1,17 @@
-document.addEventListener('DOMContentLoaded',showRandomQuote)
-
-const quote_display = document.getElementById("quoteDisplay");
-const new_quote = document.getElementById('newQuote');
-
 const randomQuotes  =[{quote: "Nobody knows tommorow", category: "motivation"},
                     {quote: "Things fall apart", category: "struggle"},
                     {quote: "In the chest of a woman", category: "education"},
                     {quote: "I and my father are one", category: "church"}];
 
+document.addEventListener('DOMContentLoaded',showRandomQuote);
+const quote_display = document.getElementById("quoteDisplay");
+const new_quote = document.getElementById('newQuote');
 new_quote.addEventListener('click',showRandomQuote);
+
+    
+    
+
+
 
 
 function showRandomQuote(){
@@ -29,11 +32,8 @@ function showRandomQuote(){
         
     }
 
-   
-    
-
     createAddQuoteForm();
-
+    
 }
 
 const createAddQuoteForm = ()=>{
@@ -42,9 +42,13 @@ const createAddQuoteForm = ()=>{
     <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
     <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
     <button onclick="addQuote()">Add Quote</button>
+    <button id="exportButton">Export quotes</button>
   </div>`;
   quote_display.appendChild(div)
-}
+    const exportBtn = document.getElementById('exportButton');
+    exportBtn.addEventListener('click', exportQuotesToJSON);
+};
+
 function addQuote(){
     const userQuoteText = newQuoteText.value.trim();
     const userQuoteCat = newQuoteCategory.value.trim();
@@ -62,6 +66,39 @@ function addQuote(){
     localStorage.setItem(key, JSON.stringify(randomQuotes))
     newQuoteText.value="";
     newQuoteCategory.value=""; 
+    
+    
   }
 
+function exportQuotesToJSON() {
+  // Collect all quotes (default + stored)
+  let allQuotes = [...randomQuotes];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith("quote_")) {
+      const quotesArray = JSON.parse(localStorage.getItem(key)) || [];
+      allQuotes = allQuotes.concat(quotesArray);
+    }
+  }
+
+  // Convert to JSON
+  const jsonData = JSON.stringify(allQuotes, null, 2);
+
+  // Create Blob
+  const blob = new Blob([jsonData], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  // Create hidden link
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json";
+  document.body.appendChild(a);
+  a.click();
+
+  // Cleanup
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+exportBtn.addEventListener('click', exportQuotesToJSON)   
  
