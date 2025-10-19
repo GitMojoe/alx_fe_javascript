@@ -328,5 +328,5 @@ async function syncQuotes() {
   // Step 3: Merge and resolve conflicts
   syncWithLocal(serverQuotes);
 
-  console.log("Sync completed successfully.");
+  console.log("Quotes synced with server!");
 }
