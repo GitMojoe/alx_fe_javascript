@@ -223,6 +223,10 @@ async function startServerSync() {
   // Sync every 30 seconds (for simulation)
   setInterval(async () => {
     const serverQuotes = await fetchQuotesFromServer();
+
+    // ✅ Send any new local quotes to server before merging
+    await sendQuotesToServer();
+
     syncWithLocal(serverQuotes);
   }, 30000);
 }
@@ -256,4 +260,61 @@ function syncWithLocal(serverQuotes) {
   alert("Data synced with server. Conflicts resolved (server took priority).");
   populateCategories();
   filterQuotes();
+}
+
+// ---------------- STEP 4: SERVER INTERACTION ----------------
+
+// Mock API endpoint (you can replace this with your real server)
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
+
+// ✅ Fetch quotes from server
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch(SERVER_URL);
+    const data = await response.json();
+
+    // Simulate converting server posts into quote objects
+    const serverQuotes = data.slice(0, 5).map((item) => ({
+      quote: item.title,
+      author: "Server",
+      category: "General",
+    }));
+
+    console.log("Fetched quotes from server:", serverQuotes);
+    return serverQuotes;
+  } catch (error) {
+    console.error("Error fetching from server:", error);
+    return [];
+  }
+}
+
+// ✅ Send local quotes to server (POST)
+async function sendQuotesToServer() {
+  let allLocalQuotes = [];
+
+  // Gather all local quotes
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith("quote_")) {
+      const quotesArray = JSON.parse(localStorage.getItem(key)) || [];
+      allLocalQuotes = allLocalQuotes.concat(quotesArray);
+    }
+  }
+
+  if (allLocalQuotes.length === 0) return;
+
+  try {
+    for (const quote of allLocalQuotes) {
+      await fetch(SERVER_URL, {
+        method: "POST", // ✅ HTTP method
+        headers: {
+          "Content-Type": "application/json", // ✅ Required header
+        },
+        body: JSON.stringify(quote), // ✅ Send quote as JSON
+      });
+    }
+    console.log("Local quotes synced to server successfully.");
+  } catch (error) {
+    console.error("Failed to send quotes to server:", error);
+  }
 }
